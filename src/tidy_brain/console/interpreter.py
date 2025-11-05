@@ -1,3 +1,4 @@
+import readline # needed for input history and editing
 import transcription as ts
 
 class Interpreter:
