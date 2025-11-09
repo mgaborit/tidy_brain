@@ -1,5 +1,6 @@
 import readline # needed for input history and editing
-import transcription as ts
+
+from transcription import Entry, Transcriptor
 
 COMMAND_PREFIX = '\\'
 DEFAULT_PROJECT = 'Misc'
@@ -8,7 +9,7 @@ class Interpreter:
     """REPL interpreter."""
 
     def __init__(self):
-        self.writers = []
+        self.transcriptors = []
         self.commands = {
             'quit': self._exit,
             'q': self._exit,
@@ -17,11 +18,11 @@ class Interpreter:
             'project': self._set_project,
             'p': self._set_project,
         }
-        self.current_project = DEFAULT_PROJECT
+        self.context = {'project': DEFAULT_PROJECT}
 
-    def add_writer(self, writer: ts.Writer) -> None:
+    def add_transcriptor(self, transcriptor: Transcriptor) -> None:
         """Add a transcription writer."""
-        self.writers.append(writer)
+        self.transcriptors.append(transcriptor)
 
     def run(self) -> None:
         """Start the interactive REPL loop."""
@@ -54,9 +55,9 @@ class Interpreter:
 
     def _process_entry(self, input_entry: str) -> None:
         """Process a transcription entry."""
-        entry = ts.Entry(content=input_entry, project=self.current_project)
-        for writer in self.writers:
-            writer.write(entry)
+        entry = Entry(content=input_entry, context=self.context)
+        for transcriptor in self.transcriptors:
+            transcriptor.write(entry)
 
     def _exit(self, arguments: list[str]) -> None:
         """Exit the application."""
@@ -74,14 +75,14 @@ To add a transcription entry, simply type it and press Enter."""
     def _set_project(self, arguments: list[str]) -> None:
         """Set the current project."""
         if arguments:
-            self.current_project = arguments[0]
+            self.context['project'] = arguments[0]
         else:
-            self.current_project = DEFAULT_PROJECT
+            self.context['project'] = DEFAULT_PROJECT
 
     def _format_prompt(self) -> str:
         """Format the input prompt."""
         prompt = ''
-        if self.current_project != DEFAULT_PROJECT:
-            prompt = f'[{self.current_project}]'
+        if self.context['project'] != DEFAULT_PROJECT:
+            prompt = f"[{self.context['project']}]"
         prompt += '> '
         return prompt

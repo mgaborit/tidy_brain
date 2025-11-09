@@ -1,10 +1,10 @@
-from transcription import DailyWriter
+from transcriptors.file_transcriptors import DailyFileTranscriptor
 from console import Interpreter
 
 WORKSPACE_DIR = "/home/martin/dev/sandbox/tidy_brain"
 
-daily = DailyWriter(WORKSPACE_DIR)
+daily = DailyFileTranscriptor(WORKSPACE_DIR)
 
 interpreter = Interpreter()
-interpreter.add_writer(daily)
+interpreter.add_transcriptor(daily)
 interpreter.run()

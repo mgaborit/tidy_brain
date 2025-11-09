@@ -1,13 +1,14 @@
-from datetime import datetime
 import os
 
-from . import Entry
+from transcription import Entry, Transcriptor
 
-class Writer:
+class FileTranscriptor(Transcriptor):
+    """Base class for file-based transcription handlers."""
     def __init__(self,  base_dir: str):
         self.base_dir = base_dir
 
     def write(self, entry: Entry) -> None:
+        """Write a transcription entry to the appropriate file."""
         with open(self._get_file_path(entry), self._ensure_file_exists(entry), encoding='utf-8') as file:
             file.write(self._format_line(entry))
 
@@ -25,7 +26,8 @@ class Writer:
         """Get the full file path for the transcription file."""
         raise NotImplementedError
 
-class DailyWriter(Writer):
+class DailyFileTranscriptor(FileTranscriptor):
+    """File-based daily transcription handler."""
     def __init__(self, workspace_dir: str):
         super().__init__(os.path.join(workspace_dir, 'daily'))
 
@@ -33,7 +35,7 @@ class DailyWriter(Writer):
         """Format a transcription entry."""
         return '\t'.join([
             f'[{entry.timestamp.isoformat(timespec="minutes", sep=" ")}]',
-            entry.project, 
+            entry.context['project'] if entry.context is not None and 'project' in entry.context else '',
             entry.content
         ]) + '\n'
 
