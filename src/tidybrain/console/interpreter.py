@@ -1,5 +1,5 @@
 """REPL interpreter for Tidy Brain application."""
-import readline # pyright: ignore[reportUnusedImport] Enables command history and editing
+import readline
 import sys
 
 from ..brain import Brain
@@ -29,6 +29,10 @@ class Interpreter:
 
     def run(self) -> None:
         """Start the interactive REPL loop."""
+        completer = Completer(list(self.commands.keys()), self.brain)
+        readline.set_completer_delims(' \t')
+        readline.set_completer(completer.complete)
+        readline.parse_and_bind("tab: complete")
         while True:
             try:
                 input_entry = input(self._format_prompt()).strip()
@@ -112,3 +116,64 @@ To add a transcription entry, simply type it and press Enter."""
                 prompt += f"/{section_name}"
         prompt += "> "
         return prompt
+
+class Completer:
+    """Autocomplete for REPL commands."""
+    def __init__(self, commands: list[str], brain: Brain):
+        self.commands: list[str] = commands
+        self.projects: list[str] = list(brain.projects.keys())
+        self.sections: dict[str, list[str]] = {
+            project_name: list(project.sections.keys())
+            for project_name, project in brain.projects.items()
+        }
+
+    def complete(self, text: str, state: int) -> str | None:
+        """Autocomplete command input."""
+        current_input = readline.get_line_buffer()
+        if current_input.startswith(COMMAND_PREFIX):
+            # User is typing a command
+            tokens = current_input.split()
+            if len(tokens) == 1 and text != '':
+                # 1 token + non-empty current scope = current scope is on command
+                return self._complete_from_elements(
+                    '' if text == COMMAND_PREFIX else text[1:],
+                    state,
+                    self.commands,
+                    COMMAND_PREFIX)
+
+            if tokens[0] in [f'{COMMAND_PREFIX}project', f'{COMMAND_PREFIX}p'] \
+                and len(tokens) == 2 \
+                and text == tokens[1]:
+                # project command + 2 tokens + current scope is equal to second token
+                # = project/section argument
+                project_section = text.split('/', 1)
+                if len(project_section) == 1:
+                    # if on project part
+                    return self._complete_from_elements(
+                        project_section[0],
+                        state,
+                        self.projects)
+
+                if len(project_section) == 2:
+                    if project_section[0] in self.projects:
+                        # if project part matches an existing project and on section part
+                        return self._complete_from_elements(
+                            project_section[1],
+                            state,
+                            self.sections[project_section[0]],
+                            f'{project_section[0]}/')
+        return None
+
+    def _complete_from_elements(
+            self,
+            text: str,
+            state: int,
+            elements: list[str],
+            prefix: str | None = None) -> str | None:
+        filtered_elements = [element for element in elements if element.startswith(text)]
+        if state < len(filtered_elements):
+            if prefix:
+                return f'{prefix}{filtered_elements[state]}'
+            else:
+                return filtered_elements[state]
+        return None
