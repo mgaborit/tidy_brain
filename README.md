@@ -1,2 +1,3 @@
-# tidy_brain
+# tidybrain
+
 Little tool to facilitate taking and processing notes
