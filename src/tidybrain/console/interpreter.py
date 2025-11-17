@@ -150,7 +150,8 @@ class Completer:
                         text,
                         state,
                         self.projects)
-                elif len(tokens) == 2 and text == tokens[1]:
+                
+                if len(tokens) == 2 and text == tokens[1]:
                     # project command + 2 tokens + current scope is equal to second token
                     # = project/section argument
                     project_section = text.split('/', 1)
