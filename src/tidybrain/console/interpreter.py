@@ -174,6 +174,5 @@ class Completer:
         if state < len(filtered_elements):
             if prefix:
                 return f'{prefix}{filtered_elements[state]}'
-            else:
-                return filtered_elements[state]
+            return filtered_elements[state]
         return None
