@@ -176,7 +176,7 @@ class Completer:
                                 state,
                                 self.sections[project_section[0]],
                                 f'{project_section[0]}/')
-            
+
         elif text.startswith(TAG_PREFIX):
             # User is typing a tag
             return self._complete_from_elements(

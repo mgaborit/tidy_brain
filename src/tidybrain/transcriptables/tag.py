@@ -1,4 +1,4 @@
-
+"""Module for tag transcriptables in Tidy Brain application."""
 from ..transcription import Entry, Transcriptable
 
 TAG_PREFIX = "#"
