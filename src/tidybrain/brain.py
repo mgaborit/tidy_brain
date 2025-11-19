@@ -4,7 +4,7 @@ import json
 import os
 
 from .transcription import Entry
-from .transcriptables import Daily, Project, Section, Tag
+from .transcriptables import Daily, Person, Project, Section, Tag
 from .transcriptors.file import FileTranscriptor
 
 class Brain:
@@ -14,6 +14,7 @@ class Brain:
         self.daily = Daily(date.today())
         self.projects: dict[str, Project] = {}
         self.tags: dict[str, Tag] = {}
+        self.persons: dict[str, Person] = {}
 
     def process(self, entry: Entry) -> None:
         """Process a transcription entry."""
@@ -22,6 +23,8 @@ class Brain:
             project.accept(entry)
         for tag in self.tags.values():
             tag.accept(entry)
+        for person in self.persons.values():
+            person.accept(entry)
 
     def load(self, config_file: str):
         """Load workspace configuration."""
@@ -72,3 +75,21 @@ class Brain:
                         tag_config.get('filename', f'{tag.name}.txt')
                     )))
             self.tags[tag.name] = tag
+
+        persons_dir = os.path.join(workspace_dir, configuration.get('persons_dir', 'people'))
+        for person_config in configuration.get('persons', []):
+            person = Person(
+                short_name=person_config['short_name'],
+                full_name=person_config.get('full_name', ""),
+                email=person_config.get('email', "")
+            )
+            default_filename = f'{person.short_name
+                                  if len(person.full_name) == 0
+                                  else person.full_name}.txt'
+            person.register(
+                FileTranscriptor(
+                    os.path.join(
+                        persons_dir,
+                        person_config.get('filename', default_filename)
+                    )))
+            self.persons[person.short_name] = person

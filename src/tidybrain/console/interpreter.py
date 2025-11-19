@@ -5,6 +5,7 @@ import sys
 from ..brain import Brain
 from ..transcription import ContextKeys, Entry
 from ..transcriptables.tag import TAG_PREFIX
+from ..transcriptables.person import PERSON_PREFIX
 
 COMMAND_PREFIX = '\\'
 
@@ -134,6 +135,8 @@ class Completer:
             sections.sort()
         self.tags: list[str] = [tag.name for tag in brain.tags.values()]
         self.tags.sort()
+        self.persons: list[str] = [person.short_name for person in brain.persons.values()]
+        self.persons.sort()
 
     def complete(self, text: str, state: int) -> str | None:
         """Autocomplete command input."""
@@ -178,12 +181,20 @@ class Completer:
                                 f'{project_section[0]}/')
 
         elif text.startswith(TAG_PREFIX):
-            # User is typing a tag
+            # User is typing a tag related entry
             return self._complete_from_elements(
                 text[len(TAG_PREFIX):],
                 state,
                 self.tags,
                 TAG_PREFIX)
+
+        elif text.startswith(PERSON_PREFIX):
+            # User is typing a person related entry
+            return self._complete_from_elements(
+                text[len(PERSON_PREFIX):],
+                state,
+                self.persons,
+                PERSON_PREFIX)
 
         return None
 

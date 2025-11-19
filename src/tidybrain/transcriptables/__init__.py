@@ -2,4 +2,5 @@
 from .project import Project, Section
 from .daily import Daily
 from .tag import Tag
-__all__ = ['Project', 'Section', 'Daily', 'Tag']
+from .person import Person
+__all__ = ['Project', 'Section', 'Daily', 'Tag', 'Person']

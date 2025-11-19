@@ -41,7 +41,26 @@
             "name": "cta"
         }
     ],
+    "persons": [
+        {
+            "short_name": "alice",
+            "full_name": "Alice Johnson",
+            "filename": "alice_johnson.txt"
+        },
+        {
+            "short_name": "bob",
+            "full_name": "Bob Smith"
+        },
+        {
+            "short_name": "carol"
+        },
+        {
+            "short_name": "dave",
+            "email": "dave.lee@example.com"
+        }
+    ],
     "daily_dir": "daily",
     "projects_dir": "projects",
-    "tags_dir": "tags"
+    "tags_dir": "tags",
+    "persons_dir": "persons"
 }
