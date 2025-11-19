@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 dependencies = ["pyreadline3; os_name == 'nt'"]
 name = "tidybrain"
-version = "0.0.4"
+version = "0.0.5"
 authors = [{ name = "Martin GABORIT", email = "mgaborit.dev@gmail.com" }]
 description = "Little tool to facilitate taking and processing notes"
 readme = "README.md"
